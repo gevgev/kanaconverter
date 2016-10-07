@@ -6,11 +6,17 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"os"
 	"os/exec"
 )
 
 func main() {
 	inputText := "私の名前はキコです"
+	args := os.Args[1:]
+	if len(args) > 0 {
+		inputText = args[0]
+	}
+
 	out := runKanaConverter(populateStdin(inputText))
 	fmt.Printf("Input: %s\nOutput: %s\n", inputText, out)
 }
