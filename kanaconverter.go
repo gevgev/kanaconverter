@@ -2,21 +2,20 @@ package main
 
 import (
 	"bytes"
-	//"fmt"
+	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
-	"os"
 	"os/exec"
 )
 
 func main() {
-	inputText := "私の名前はキコです\n"
-
-	runKanaConverter(populateStdin(inputText))
-	//fmt.Printf("Katakana: %s\n", out)
+	inputText := "私の名前はキコです"
+	out := runKanaConverter(populateStdin(inputText))
+	fmt.Printf("Input: %s\nOutput: %s\n", inputText, out)
 }
 
-func runKanaConverter(populate_stdin_func func(io.WriteCloser)) {
+func runKanaConverter(populate_stdin_func func(io.WriteCloser)) string {
 	args := []string{"-JK", "-HK", "-s", "-o", "utf8", "-i", "utf8"}
 
 	cmd := exec.Command("kakasi", args...)
@@ -37,12 +36,17 @@ func runKanaConverter(populate_stdin_func func(io.WriteCloser)) {
 	}
 
 	populate_stdin_func(stdin)
-	io.Copy(os.Stdout, stdout)
+	b, err := ioutil.ReadAll(stdout)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	err = cmd.Wait()
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	return string(b)
 }
 
 func populateStdin(str string) func(io.WriteCloser) {
