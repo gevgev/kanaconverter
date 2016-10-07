@@ -22,7 +22,7 @@ func main() {
 }
 
 func runKanaConverter(populate_stdin_func func(io.WriteCloser)) string {
-	args := []string{"-JK", "-HK", "-s", "-o", "utf8", "-i", "utf8"}
+	args := []string{"-JK", "-HK", "-s", "-p", "-o", "utf8", "-i", "utf8"}
 
 	cmd := exec.Command("kakasi", args...)
 
