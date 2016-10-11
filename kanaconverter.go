@@ -2,19 +2,27 @@ package main
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
-	"os"
 	"os/exec"
 )
 
+var allOptions bool
+
 func main() {
 	inputText := "私の名前はキコです"
-	args := os.Args[1:]
-	if len(args) > 0 {
-		inputText = args[0]
+
+	flagAllOptions := flag.Bool("p", false, "`All Spelling Options`")
+	flagInputString := flag.String("i", inputText, "`Input string to convert`")
+	flag.Parse()
+	if flag.Parsed() {
+		allOptions = *flagAllOptions
+		inputText = *flagInputString
+	} else {
+		flag.Usage()
 	}
 
 	out := runKanaConverter(populateStdin(inputText))
@@ -22,8 +30,12 @@ func main() {
 }
 
 func runKanaConverter(populate_stdin_func func(io.WriteCloser)) string {
-	args := []string{"-JK", "-HK", "-s", "-p", "-o", "utf8", "-i", "utf8"}
+	//args := []string{"-JK", "-HK", "-s", "-p", "-o", "utf8", "-i", "utf8"}
+	args := []string{"-JK", "-HK", "-s", "-o", "utf8", "-i", "utf8"}
 
+	if allOptions {
+		args = append(args, "-p")
+	}
 	cmd := exec.Command("kakasi", args...)
 
 	stdin, err := cmd.StdinPipe()
